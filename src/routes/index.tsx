@@ -50,19 +50,24 @@ const statusStyles: Record<TxStatus, string> = {
 
 function Dashboard() {
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen w-full bg-background">
       <DashboardSidebar />
 
-      <main className="flex-1 px-4 py-6 sm:px-8">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-            <p className="text-sm text-muted-foreground">
-              Welcome back, here is your money at a glance.
-            </p>
+      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <MobileNav />
+            <div className="min-w-0">
+              <h1 className="truncate text-xl font-semibold tracking-tight sm:text-2xl">
+                Dashboard
+              </h1>
+              <p className="truncate text-xs text-muted-foreground sm:text-sm">
+                Welcome back, here is your money at a glance.
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center rounded-full border border-border bg-card p-1">
+          <div className="flex shrink-0 items-center gap-2">
+            <div className="hidden items-center rounded-full border border-border bg-card p-1 sm:flex">
               <span className="flex size-8 items-center justify-center rounded-full bg-[image:var(--gradient-primary)] text-primary-foreground">
                 <Moon className="size-4" />
               </span>
@@ -70,31 +75,38 @@ function Dashboard() {
                 <Sun className="size-4" />
               </span>
             </div>
-            <button className="flex size-10 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:text-foreground">
+            <button
+              aria-label="Notifications"
+              className="flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground transition-colors hover:text-foreground"
+            >
               <Bell className="size-4" />
             </button>
-            <span className="flex size-10 items-center justify-center rounded-full bg-accent text-sm font-semibold">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-semibold">
               AV
             </span>
           </div>
         </header>
 
-        <section className="mt-6 grid gap-4 md:grid-cols-3">
+        <section className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {stats.map((stat) => (
-            <article key={stat.label} className="surface-card flex items-center gap-4 p-5">
-              <span className="flex size-11 items-center justify-center rounded-xl bg-accent text-primary-soft">
+            <article
+              key={stat.label}
+              className="surface-card flex min-w-0 items-center gap-4 p-4 sm:p-5"
+            >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-accent text-primary-soft">
                 <stat.icon className="size-5" />
               </span>
-              <div>
-                <p className="text-xs uppercase tracking-wider text-muted-foreground">
+              <div className="min-w-0">
+                <p className="truncate text-xs uppercase tracking-wider text-muted-foreground">
                   {stat.label}
                 </p>
-                <p className="mt-1 text-xl font-semibold">{stat.value}</p>
+                <p className="mt-1 truncate text-lg font-semibold sm:text-xl">{stat.value}</p>
               </div>
-              <span className="ml-auto text-xs text-muted-foreground">{stat.delta}</span>
+              <span className="ml-auto shrink-0 text-xs text-muted-foreground">{stat.delta}</span>
             </article>
           ))}
         </section>
+
 
         <section className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
           <div className="flex flex-col gap-4">
