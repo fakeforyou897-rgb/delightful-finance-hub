@@ -56,16 +56,20 @@ export function BalanceDonut() {
           <Pie
             data={balanceSplit}
             dataKey="value"
+            nameKey="name"
+            cx="50%"
+            cy="50%"
             innerRadius={68}
             outerRadius={98}
             paddingAngle={3}
-            cornerRadius={10}
             stroke="none"
+            isAnimationActive={false}
           >
             {balanceSplit.map((slice) => (
               <Cell key={slice.name} fill={slice.color} />
             ))}
           </Pie>
+
           <Tooltip
             contentStyle={{
               background: "var(--popover)",
