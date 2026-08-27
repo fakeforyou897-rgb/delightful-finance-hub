@@ -90,8 +90,11 @@ export function ThemeToggle() {
       {/* soft glow halo on hover */}
       <span
         aria-hidden
-        className="absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-        style={{ background: "radial-gradient(circle at center, var(--color-gold, currentColor) 0%, transparent 70%)", opacity: undefined }}
+        className="pointer-events-none absolute inset-0 rounded-full opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        style={{
+          background:
+            "radial-gradient(circle at center, color-mix(in oklab, var(--color-gold, #facc15) 22%, transparent) 0%, transparent 72%)",
+        }}
       />
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
