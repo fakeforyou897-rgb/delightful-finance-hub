@@ -77,31 +77,26 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Vorix — Finance Dashboard" },
-      { name: "description", content: "Balances, revenue reports and payments in one dashboard." },
-      { property: "og:title", content: "Vorix — Finance Dashboard" },
-      {
-        property: "og:description",
-        content: "Balances, revenue reports and payments in one dashboard.",
-      },
+      { title: "Lovable App" },
+      { name: "description", content: "FinTech Portfolio Pro: A premium single-page portfolio showcasing a Full-Stack Developer's expertise in banking and FinTech." },
+      { name: "author", content: "Lovable" },
+      { property: "og:title", content: "Lovable App" },
+      { property: "og:description", content: "FinTech Portfolio Pro: A premium single-page portfolio showcasing a Full-Stack Developer's expertise in banking and FinTech." },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
+      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Lovable App" },
+      { name: "twitter:description", content: "FinTech Portfolio Pro: A premium single-page portfolio showcasing a Full-Stack Developer's expertise in banking and FinTech." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e48d2db8-502c-4162-a250-6c6a1f11e61e/id-preview-d0ce9239--f1007057-ee38-449f-8aa9-544b472a5bf0.lovable.app-1781081962063.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/e48d2db8-502c-4162-a250-6c6a1f11e61e/id-preview-d0ce9239--f1007057-ee38-449f-8aa9-544b472a5bf0.lovable.app-1781081962063.png" },
     ],
     links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap",
-      },
       {
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
-
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -124,6 +119,22 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    const onScroll = () => {
+      document.documentElement.classList.add("is-scrolling");
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        document.documentElement.classList.remove("is-scrolling");
+      }, 600);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(timeout);
+    };
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
