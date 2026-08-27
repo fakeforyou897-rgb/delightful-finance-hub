@@ -136,13 +136,13 @@
   ::selection { background: rgba(59, 130, 246, 0.3); }
 }
 
-/* ===== Smooth theme (dark/light) transitions ===== */
+/* ===== Theme fade fallback (no View Transitions support) ===== */
 .theme-transitioning,
 .theme-transitioning *,
 .theme-transitioning *::before,
 .theme-transitioning *::after {
   transition-property: background-color, color, border-color, box-shadow, fill, stroke, opacity, outline-color, text-decoration-color;
-  transition-duration: 400ms;
+  transition-duration: 280ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
