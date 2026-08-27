@@ -2,43 +2,56 @@ import { useEffect, useRef, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
+type ViewTransition = { ready: Promise<void>; finished: Promise<void> };
 type ViewTransitionDoc = Document & {
-  startViewTransition?: (update: () => void) => { ready: Promise<void> };
+  startViewTransition?: (update: () => void) => ViewTransition;
 };
+
+const REVEAL_DURATION = 420;
 
 export function ThemeToggle() {
   const [light, setLight] = useState(false);
-  const transitionTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const runningRef = useRef(false);
+  const fallbackTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const stored = typeof window !== "undefined" ? localStorage.getItem("theme") : null;
     const isLight = stored === "light";
     setLight(isLight);
     document.documentElement.classList.toggle("light", isLight);
+    return () => {
+      if (fallbackTimeout.current) clearTimeout(fallbackTimeout.current);
+    };
   }, []);
 
-  const applyTheme = (next: boolean) => {
+  // Pure theme flip — used inside the view-transition snapshot.
+  const flipTheme = (next: boolean) => {
+    setLight(next);
+    document.documentElement.classList.toggle("light", next);
+    localStorage.setItem("theme", next ? "light" : "dark");
+  };
+
+  // Fallback for browsers without View Transitions: short CSS fade.
+  const applyWithFade = (next: boolean) => {
     const root = document.documentElement;
     root.classList.add("theme-transitioning");
-    setLight(next);
-    root.classList.toggle("light", next);
-    localStorage.setItem("theme", next ? "light" : "dark");
-
-    if (transitionTimeout.current) clearTimeout(transitionTimeout.current);
-    transitionTimeout.current = setTimeout(() => {
+    flipTheme(next);
+    if (fallbackTimeout.current) clearTimeout(fallbackTimeout.current);
+    fallbackTimeout.current = setTimeout(() => {
       root.classList.remove("theme-transitioning");
-      transitionTimeout.current = null;
-    }, 450);
+      fallbackTimeout.current = null;
+    }, 300);
   };
 
   const toggle = () => {
+    if (runningRef.current) return;
     const next = !light;
     const doc = document as ViewTransitionDoc;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-    // Graceful fallback for browsers without View Transitions
-    if (!doc.startViewTransition) {
-      applyTheme(next);
+    if (!doc.startViewTransition || reduceMotion) {
+      applyWithFade(next);
       return;
     }
 
@@ -51,13 +64,11 @@ export function ThemeToggle() {
       Math.max(y, window.innerHeight - y),
     );
 
-    const transition = doc.startViewTransition(() => applyTheme(next));
+    runningRef.current = true;
+    const transition = doc.startViewTransition(() => flipTheme(next));
 
     transition.ready
       .then(() => {
-        document.documentElement.style.setProperty("--vt-x", `${x}px`);
-        document.documentElement.style.setProperty("--vt-y", `${y}px`);
-        document.documentElement.style.setProperty("--vt-r", `${radius}px`);
         document.documentElement.animate(
           {
             clipPath: [
@@ -66,7 +77,7 @@ export function ThemeToggle() {
             ],
           },
           {
-            duration: 650,
+            duration: REVEAL_DURATION,
             easing: "cubic-bezier(0.22, 1, 0.36, 1)",
             pseudoElement: "::view-transition-new(root)",
           },
@@ -74,6 +85,12 @@ export function ThemeToggle() {
       })
       .catch(() => {
         /* transition skipped — theme already applied */
+      });
+
+    transition.finished
+      .catch(() => {})
+      .finally(() => {
+        runningRef.current = false;
       });
   };
 
